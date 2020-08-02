@@ -1,8 +1,15 @@
-import React, { useMemo } from 'react';
-import ConnectedTodoItem from '../containers/ConnectedTodoItem';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { createSelector } from 'reselect';
+import TodoItem from './todoItem';
 
-function TodoList({ filter, todos }) {
-  const filteredTodos = useMemo(() => {
+const todosSelector = (state) => state.todos;
+const filterSelector = (state) => state.filter;
+
+const selectFilteredTodos = createSelector(
+  todosSelector,
+  filterSelector,
+  (todos, filter) => {
     switch (filter) {
       case 'active':
         return todos.filter((t) => t.completed === false);
@@ -14,10 +21,14 @@ function TodoList({ filter, todos }) {
       case 'all':
         return todos;
     }
-  }, [filter, todos]);
+  },
+);
+
+function TodoList() {
+  const filteredTodos = useSelector(selectFilteredTodos);
 
   return filteredTodos.map((item) => (
-    <ConnectedTodoItem {...item} key={item.id} />
+    <TodoItem {...item} key={item.id} />
   ));
 }
 

@@ -1,14 +1,15 @@
 // eslint-disable-next-line max-len
 /* eslint-disable react/prop-types,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { filterTodos } from '../actions';
 
-function TodoFilterItem({
-  name,
-  filterTodos,
-  filter = 'all',
-}) {
+function TodoFilterItem({ name }) {
+  const dispatch = useDispatch();
+  const filter = useSelector((state) => state.filter);
+
   function handleFilter() {
-    filterTodos(name);
+    dispatch(filterTodos(name));
   }
 
   const style = {

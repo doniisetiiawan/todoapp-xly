@@ -1,19 +1,17 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { removeTodo, toggleTodo } from '../actions';
 
-function TodoItem({
-  title,
-  completed,
-  id,
-  toggleTodo,
-  removeTodo,
-}) {
+function TodoItem({ title, completed, id }) {
+  const dispatch = useDispatch();
+
   function handleToggle() {
-    toggleTodo(id);
+    dispatch(toggleTodo(id));
   }
 
   function handleRemove() {
-    removeTodo(id);
+    dispatch(removeTodo(id));
   }
 
   return (

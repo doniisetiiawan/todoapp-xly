@@ -1,7 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addTodo } from '../actions';
 
-function AddTodo({ addTodo }) {
+function AddTodo() {
+  const dispatch = useDispatch();
   const [input, setInput] = useState('');
 
   function handleInput(e) {
@@ -10,7 +13,7 @@ function AddTodo({ addTodo }) {
 
   function handleAdd() {
     if (input) {
-      addTodo(input);
+      dispatch(addTodo(input));
       setInput('');
     }
   }

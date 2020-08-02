@@ -1,23 +1,27 @@
 /* eslint-disable react/no-unused-state,react/prop-types */
 import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import Header from './header';
-import ConnectedAddTodo from '../containers/ConnectedAddTodo';
-import ConnectedTodoList from '../containers/ConnectedTodoList';
-import ConnectedTodoFilter from '../containers/ConnectedTodoFilter';
+import AddTodo from './addTodo';
+import { fetchTodos } from '../actions';
+import TodoList from './todoList';
+import TodoFilter from './todoFilter';
 
-function App({ fetchTodos }) {
+function App() {
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos]);
+    dispatch(fetchTodos());
+  }, [dispatch]);
 
   return (
     <div style={{ width: 400 }}>
       <Header />
-      <ConnectedAddTodo />
+      <AddTodo />
       <hr />
-      <ConnectedTodoList />
+      <TodoList />
       <hr />
-      <ConnectedTodoFilter />
+      <TodoFilter />
     </div>
   );
 }
