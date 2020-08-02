@@ -25,6 +25,7 @@ function TodoItem({
       />
       {title}
       <button
+        type="button"
         style={{ float: 'right' }}
         onClick={handleRemove}
       >

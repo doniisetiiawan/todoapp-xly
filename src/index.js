@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
+import store from './configureStore';
+import ConnectedApp from './containers/ConnectedApp';
 
 ReactDOM.render(
   // eslint-disable-next-line react/jsx-filename-extension
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <ConnectedApp />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
