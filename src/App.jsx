@@ -1,72 +1,29 @@
 /* eslint-disable react/no-unused-state */
-import React from 'react';
-import uniqid from 'uniqid';
+import React, {
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
 import Header from './header';
 import AddTodo from './addTodo';
 import TodoList from './todoList';
 import TodoFilter from './todoFilter';
 import StateContext from './StateContext';
+import appReducer from './reducers';
 import { fetchAPITodos } from './api';
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+function App() {
+  const [state, dispatch] = useReducer(appReducer, {
+    todos: [],
+    filter: 'all',
+  });
 
-    this.state = {
-      todos: [],
-      filteredTodos: [],
-      filter: 'all',
-    };
-  }
+  useEffect(() => {
+    fetchAPITodos().then((todos) => dispatch({ type: 'FETCH_TODOS', todos }));
+  }, []);
 
-  componentDidMount = () => {
-    this.fetchTodos();
-  };
-
-  fetchTodos = () => {
-    fetchAPITodos().then((todos) => {
-      this.setState({ todos });
-      this.filterTodos();
-    });
-  };
-
-  addTodo = (title) => {
-    const { todos } = this.state;
-
-    const newTodo = {
-      id: uniqid(),
-      title,
-      completed: false,
-    };
-
-    this.setState({ todos: [newTodo, ...todos] });
-    this.filterTodos();
-  };
-
-  toggleTodo = (id) => {
-    const { todos } = this.state;
-
-    const newTodos = todos.map((t) => {
-      if (t.id === id) {
-        return { ...t, completed: !t.completed };
-      }
-      return t;
-    }, []);
-
-    this.setState({ todos: newTodos });
-    this.filterTodos();
-  };
-
-  removeTodo = (id) => {
-    const { todos } = this.state;
-
-    const newTodos = todos.filter((t) => t.id !== id);
-
-    this.setState({ todos: newTodos });
-    this.filterTodos();
-  };
-
-  applyFilter = (todos, filter) => {
+  const filteredTodos = useMemo(() => {
+    const { filter, todos } = state;
     switch (filter) {
       case 'active':
         return todos.filter((t) => t.completed === false);
@@ -78,39 +35,42 @@ class App extends React.Component {
       case 'all':
         return todos;
     }
-  };
+  }, [state]);
 
-  filterTodos = (filterArg) => {
-    this.setState(({ todos, filter }) => ({
-      filter: filterArg || filter,
-      filteredTodos: this.applyFilter(
-        todos,
-        filterArg || filter,
-      ),
-    }));
-  };
-
-  render() {
-    const { filter, filteredTodos } = this.state;
-    return (
-      <StateContext.Provider value={filteredTodos}>
-        <div style={{ width: 400 }}>
-          <Header />
-          <AddTodo addTodo={this.addTodo} />
-          <hr />
-          <TodoList
-            toggleTodo={this.toggleTodo}
-            removeTodo={this.removeTodo}
-          />
-          <hr />
-          <TodoFilter
-            filter={filter}
-            filterTodos={this.filterTodos}
-          />
-        </div>
-      </StateContext.Provider>
-    );
+  function addTodo(title) {
+    dispatch({ type: 'ADD_TODO', title });
   }
+
+  function toggleTodo(id) {
+    dispatch({ type: 'TOGGLE_TODO', id });
+  }
+
+  function removeTodo(id) {
+    dispatch({ type: 'REMOVE_TODO', id });
+  }
+
+  function filterTodos(filter) {
+    dispatch({ type: 'FILTER_TODOS', filter });
+  }
+
+  return (
+    <StateContext.Provider value={filteredTodos}>
+      <div style={{ width: 400 }}>
+        <Header />
+        <AddTodo addTodo={addTodo} />
+        <hr />
+        <TodoList
+          toggleTodo={toggleTodo}
+          removeTodo={removeTodo}
+        />
+        <hr />
+        <TodoFilter
+          filter={state.filter}
+          filterTodos={filterTodos}
+        />
+      </div>
+    </StateContext.Provider>
+  );
 }
 
 export default App;
